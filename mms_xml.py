@@ -248,14 +248,18 @@ class LmmsProjectHead(XmlNode):
 class Song(XmlNode):
     _children = ["track_container", "track", "fx_mixer", "controller_rack_view", "piano_roll", "automation_editor", "project_notes", "timeline", "controllers"]
 
-def load_project(filename):
-    with open(filename) as f:
+def load_project(file_or_filename):
+    if not hasattr(file_or_filename, "read"):
+        file_or_filename = open(file_or_filename, "r")
+    with file_or_filename as f:
         tree = ET.parse(f)
     return LmmsProject.load(tree.getroot())
 
-def save_project(project, filename):
+def save_project(project, file_or_filename):
     project_el = project.dump()
     tree = ET.ElementTree(project_el)
-    with open(filename, 'w') as f:
+    if not hasattr(file_or_filename, "write"):
+        file_or_filename = open(file_or_filename, "w")
+    with file_or_filename as f:
         f.write('<?xml version="1.0"?>\n<!DOCTYPE lmms-project>\n')
         tree.write(f, xml_declaration=False)

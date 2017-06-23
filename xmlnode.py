@@ -55,11 +55,20 @@ class XmlNode(object):
     _attributes = {}
 
     @classmethod
-    def load(cls, el):
+    def load(cls, el, parent=None):
         self = cls()
         if el.tag != cls._tag:
             raise Exception("Got tag '{}' expected '{}' for {}"
                     .format(el.tag, cls._tag, cls.__name__))
+
+        self.parent = parent
+        if parent is not None:
+            self.nodes = parent.nodes
+        else:
+            self.nodes = {}
+        if cls._name_plural not in self.nodes:
+            self.nodes[cls._name_plural] = []
+        self.nodes[cls._name_plural].append(self)
 
         for attr, (default, conv_fn, _) in cls._attributes.items():
             try:
@@ -76,7 +85,7 @@ class XmlNode(object):
             children_els = el.findall(child_node._tag)
             if children_els is not None:
                 for child_el in children_els:
-                    children.append(child_node.load(child_el))
+                    children.append(child_node.load(child_el, parent=self))
             setattr(self, child_node._name_plural, children)
 
         cls.load_extra(self, el)
