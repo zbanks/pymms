@@ -2,6 +2,8 @@ from xmlnode import *
 
 # XML Nodes for `.mmp` files
 
+PPQN = 48 # Pulses per quarter note. Can this be configured???
+
 class Note(XmlNode):
     _attributes = {
         "pan": AT_INT(0),
@@ -21,6 +23,43 @@ class Pattern(XmlNode):
         "len": AT_INT(100),
     }
     _children = [Note]
+
+    @property
+    def beat_len(self):
+        return self.len / float(PPQN)
+    
+    @beat_len.setter
+    def beat_len(self, l):
+        self.len = int(round(l * PPQN))
+
+    class HOLD(object):
+        pass
+
+    def set_melody(self, notes, note_beat_len=1):
+        note_len_pulse = int(round(note_beat_len * PPQN))
+        self.notes = []
+        for offset, pitch in enumerate(notes):
+            if pitch is None:
+                continue
+            if pitch is self.HOLD:
+                self.notes[-1].len += note_len_pulse
+                continue
+
+            note = Note()
+            note.pan = 0
+            note.key = pitch
+            note.vol = 100
+            note.pos = note_len_pulse * offset
+            note.len = note_len_pulse
+            self.notes.append(note)
+        self.len = len(notes) * note_len_pulse
+
+    def __repr__(self):
+        return "<Pattern: len={}b>".format(self.len)
+
+    def shift_pitch(self, shift_deg):
+        for note in self.notes:
+            note.key += shift_deg
 
 class Time(XmlNode):
     _attributes = {
@@ -169,6 +208,23 @@ class Track(XmlNode):
         "type": AT_INT(0),
     }
     _children = ["bb_track", "instrument_track", "sample_track", "automation_track", "automation_pattern", "pattern"]
+
+    def load_extra(self, *args, **kwargs):
+        self.path = []
+        p = self.parent
+        while p is not None:
+            if p._name == "track":
+                self.path.insert(0, p.name)
+            elif p._name == "track_container":
+                self.path.insert(0, p.type)
+            p = p.parent
+
+    @property
+    def full_name(self):
+        return "::".join(list(self.path) + [self.name])
+
+    def __repr__(self):
+        return "<Track: {}>".format(self.full_name)
 
 class TrackContainer(XmlNode):
     _name = "track_container"

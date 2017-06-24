@@ -56,10 +56,13 @@ class XmlNode(object):
 
     def __init__(self, **kwargs):
         self.extra_attrib = {}
+        self.parent = None
 
         for kw, value in kwargs.items():
             if kw in self._attributes:
                 setattr(self, kw, value)
+
+        self.load_extra()
 
     @classmethod
     def load(cls, el, parent=None):
@@ -98,8 +101,7 @@ class XmlNode(object):
         cls.load_extra(self, el)
         return self
 
-    @classmethod
-    def load_extra(cls, self, el):
+    def load_extra(self, el=None):
         pass
 
     def dump(self):
