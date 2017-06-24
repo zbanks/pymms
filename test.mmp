@@ -62,7 +62,7 @@
           <fxchain enabled="0" numofeffects="0"/>
         </instrumenttrack>
         <pattern len="192" muted="0" name="Organic" pos="0" steps="16" type="0"/>
-        <pattern len="960" muted="0" name="Organic" pos="384" steps="16" type="1">
+        <pattern len="960" muted="0" name="Organic" pos="0" steps="16" type="1">
           <note key="58" len="48" pan="0" pos="204" vol="100"/>
           <note key="60" len="48" pan="0" pos="336" vol="100"/>
           <note key="54" len="48" pan="0" pos="432" vol="100"/>

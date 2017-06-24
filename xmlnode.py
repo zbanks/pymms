@@ -54,6 +54,13 @@ class XmlNode(object):
     _children = []
     _attributes = {}
 
+    def __init__(self, **kwargs):
+        self.extra_attrib = {}
+
+        for kw, value in kwargs.items():
+            if kw in self._attributes:
+                setattr(self, kw, value)
+
     @classmethod
     def load(cls, el, parent=None):
         self = cls()

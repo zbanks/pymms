@@ -15,7 +15,7 @@ class Pattern(XmlNode):
     _attributes = {
         "steps": AT_INT(16),
         "muted": AT_BOOL(False),
-        "type": AT_INT(0),
+        "type": AT_INT(1),
         "name": AT_STRING("Pattern"),
         "pos": AT_INT(0),
         "len": AT_INT(100),
